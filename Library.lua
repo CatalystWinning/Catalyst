@@ -2632,15 +2632,6 @@ do
 end;
 
 function Library:Spectators()
-	local function GetSpectators()
-		local CurrentSpectators = {}
-		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
-			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then 
-				table.insert(CurrentSpectators, #CurrentSpectators+1, v)
-			end
-		end
-		return CurrentSpectators
-	end
 	local ContainerLabel = Library:CreateLabel({
 		TextXAlignment = Enum.TextXAlignment.Left;
 		Size = UDim2.new(1, 0, 0, 18);
@@ -2649,22 +2640,38 @@ function Library:Spectators()
 		ZIndex = 110;
 		Parent = Library.SpectatorContainer;
 	},  true);
-	for i,v in next, GetSpectators() do
-		ContainerLabel.Text = v.Name
-		ContainerLabel.Visible = true;
-		ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor;
-		Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor';
+
+	while true do
+		local CurrentSpectators = {}
+		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
+			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then 
+				table.insert(CurrentSpectators, #CurrentSpectators+1, v)
+			end
+		end
+
+		local Text = ""
+		for i,v in ipairs(CurrentSpectators) do
+			Text = Text .. " " .. v.Name
+		end
+
+		ContainerLabel.Text = Text
+		ContainerLabel.Visible = true
+		ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor
+		Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor'
+
 		local YSize = 0
 		local XSize = 0
 		for _, Label in next, Library.SpectatorContainer:GetChildren() do
 			if Label:IsA('TextLabel') and Label.Visible then
-				YSize = YSize + 18;
+				YSize = YSize + 18
 				if (Label.TextBounds.X > XSize) then
 					XSize = Label.TextBounds.X
 				end
-			end;
-		end;
+			end
+		end
 		Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
+
+		wait(1)
 	end
 end;
 
