@@ -2632,14 +2632,6 @@ do
 end;
 
 function Library:Spectators()
-	local ContainerLabel = Library:CreateLabel({
-		TextXAlignment = Enum.TextXAlignment.Left;
-		Size = UDim2.new(1, 0, 0, 18);
-		TextSize = 13;
-		Visible = false;
-		ZIndex = 110;
-		Parent = Library.SpectatorContainer;
-	},  true);
 	local function GetSpectators()
 		local CurrentSpectators = {}
 		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
@@ -2649,25 +2641,41 @@ function Library:Spectators()
 		end
 		return CurrentSpectators
 	end
-	for i,v in next, GetSpectators() do
-		ContainerLabel.Text = v.Name
-		ContainerLabel.Visible = true
-		ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor
-		Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor'
-		local YSize = 0
-		local XSize = 0
-		for _, Label in next, Library.SpectatorContainer:GetChildren() do
-			if Label:IsA('TextLabel') and Label.Visible then
-				YSize = YSize + 18
-				if (Label.TextBounds.X > XSize) then
-					XSize = Label.TextBounds.X
-				end
+	local ContainerLabel = Library:CreateLabel({
+		TextXAlignment = Enum.TextXAlignment.Left;
+		Size = UDim2.new(1, 0, 0, 18);
+		TextSize = 13;
+		Visible = false;
+		ZIndex = 110;
+		Parent = Library.SpectatorContainer;
+	},  true);
+	spawn(function()
+		while wait(1) do
+			for _, Label in next, Library.SpectatorContainer:GetChildren() do
+				if Label:IsA('TextLabel') and Label.Visible then
+					Label.Visible = false;
+				end;
+			end;
+			for i,v in next, GetSpectators() do
+				ContainerLabel.Text = " " .. v.Name
+				ContainerLabel.Visible = true;
+				ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor;
+				Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor';
+				local YSize = 0
+				local XSize = 0
+				for _, Label in next, Library.SpectatorContainer:GetChildren() do
+					if Label:IsA('TextLabel') and Label.Visible then
+						YSize = YSize + 18;
+						if (Label.TextBounds.X > XSize) then
+							XSize = Label.TextBounds.X
+						end
+					end;
+				end;
+				Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
 			end
 		end
-		Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
-	end
+	end)
 end;
-coroutine.wrap(Spectators)()
 
 function Library:SetWatermark(Text)
 	local X, Y = Library:GetTextBounds(Text, Library.Font, 14);
