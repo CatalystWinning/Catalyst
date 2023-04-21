@@ -2631,44 +2631,6 @@ do
 	Library:MakeDraggable(SpectatorOuter);
 end;
 
-function Library:Spectator()
-	local ContainerLabel = Library:CreateLabel({
-		TextXAlignment = Enum.TextXAlignment.Left;
-		Size = UDim2.new(1, 0, 0, 18);
-		TextSize = 13;
-		Visible = false;
-		ZIndex = 110;
-		Parent = Library.SpectatorContainer;
-	},  true);
-	local script = Instance.new('LocalScript', Library.SpectatorContainer)
-	local function GetSpectators()
-		local CurrentSpectators = {}
-		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
-			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then 
-				table.insert(CurrentSpectators, #CurrentSpectators+1, v)
-			end
-		end
-		return CurrentSpectators
-	end
-	while wait(0.05) do
-		for i,v in next, script.Parent:GetChildren() do
-			if v.Name ~= "ContainerLabel" and not v:IsA("UIListLayout") and not v:IsA("LocalScript") then
-				v:Destroy()
-			end
-		end
-		for i,v in next, GetSpectators() do
-			local new = script.Parent.ContainerLabel:Clone()
-			new.Parent = script.Parent
-			new.Visible = true
-			new.Name = v.Name
-			new.Text = v.Name
-			new.TextSize = 13
-			new.TextColor3 = Color3.fromRGB(225, 225, 225)
-		end
-	end
-end
-coroutine.wrap(Library:Spectator())()
-
 function Library:SetWatermark(Text)
 	local X, Y = Library:GetTextBounds(Text, Library.Font, 14);
 	Library.Watermark.Size = UDim2.new(0, X + 15, 0, (Y * 1.5) + 3);
