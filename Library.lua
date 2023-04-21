@@ -2632,14 +2632,6 @@ do
 end;
 
 function Library:Spectators()
-	local ContainerLabel = Library:CreateLabel({
-		TextXAlignment = Enum.TextXAlignment.Left;
-		Size = UDim2.new(1, 0, 0, 18);
-		TextSize = 13;
-		Visible = true;
-		ZIndex = 110;
-		Parent = Library.SpectatorContainer;
-	}, true);
 	local function GetSpectators()
 		local CurrentSpectators = {}
 		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
@@ -2649,24 +2641,28 @@ function Library:Spectators()
 		end
 		return CurrentSpectators
 	end
-
-	local YSize = 0
-	local XSize = 0
-	while wait(0.05) do
-		for i,v in next, Library.SpectatorContainer:GetChildren() do
-			if v.Name ~= "ContainerLabel" and not v:IsA("UIListLayout") then
-				v:Destroy()
-			end
-		end
-		for i, spectator in ipairs(GetSpectators()) do
-			ContainerLabel.Text = spectator.Name
-			ContainerLabel.TextColor3 =Color3.new(1, 1, 1)
-			YSize = YSize + 18;
-			if (ContainerLabel.TextBounds.X > XSize) then
-				XSize = ContainerLabel.TextBounds.X
+	local ContainerLabel = Library:CreateLabel({
+		TextXAlignment = Enum.TextXAlignment.Left;
+		Size = UDim2.new(1, 0, 0, 18);
+		TextSize = 13;
+		Visible = false;
+		ZIndex = 110;
+		Parent = Library.SpectatorContainer;
+	},  true);
+	for i,v in next, GetSpectators() do
+		ContainerLabel.Text = v.Name
+		ContainerLabel.Visible = true;
+		ContainerLabel.TextColor3 = Color3.new(1, 1, 1)
+		local YSize = 0
+		local XSize = 0
+		for _, Label in next, Library.SpectatorContainer:GetChildren() do
+			if Label:IsA('TextLabel') and Label.Visible then
+				YSize = YSize + 18;
+				if (Label.TextBounds.X > XSize) then
+					XSize = Label.TextBounds.X
+				end
 			end;
 		end;
-
 		Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
 	end
 end;
