@@ -2634,37 +2634,56 @@ end;
 function Library:Spectators()
 	local function GetSpectators()
 		local CurrentSpectators = {}
-		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
-			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then 
-				table.insert(CurrentSpectators, #CurrentSpectators+1, v)
+		for i, v in pairs(game:GetService("Players"):GetChildren()) do
+			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then
+				table.insert(CurrentSpectators, #CurrentSpectators + 1, v)
 			end
 		end
 		return CurrentSpectators
 	end
 
+	local SpectatorLabels = {}
+
+	for i, v in ipairs(GetSpectators()) do
+		if not SpectatorLabels[v.UserId] then
+			local ContainerLabel = Library:CreateLabel({
+				TextXAlignment = Enum.TextXAlignment.Left;
+				Size = UDim2.new(1, 0, 0, 18);
+				TextSize = 13;
+				Visible = true;
+				ZIndex = 110;
+				Parent = Library.SpectatorContainer;
+			}, true);
+
+			SpectatorLabels[v.UserId] = ContainerLabel
+		end
+
+		SpectatorLabels[v.UserId].Text = v.Name
+		SpectatorLabels[v.UserId].TextColor3 = Color3.new(1, 1, 1)
+	end
+
+	for UserId, Label in pairs(SpectatorLabels) do
+		if not table.find(GetSpectators(), function(p) return p.UserId == UserId end) then
+			Label:Destroy()
+			SpectatorLabels[UserId] = nil
+		end
+	end
+
 	local YSize = 0
 	local XSize = 0
 
-	for i, spectator in ipairs(GetSpectators()) do
-		local ContainerLabel = Library:CreateLabel({
-			TextXAlignment = Enum.TextXAlignment.Left;
-			Size = UDim2.new(1, 0, 0, 18);
-			TextSize = 13;
-			Visible = true;
-			ZIndex = 110;
-			Parent = Library.SpectatorContainer;
-		}, true);
-
-		ContainerLabel.Text = spectator.Name
-		ContainerLabel.TextColor3 = Color3.new(1, 1, 1)
-		YSize = YSize + 18;
-		if (ContainerLabel.TextBounds.X > XSize) then
-			XSize = ContainerLabel.TextBounds.X
+	for _, Label in ipairs(Library.SpectatorContainer:GetChildren()) do
+		if Label:IsA('TextLabel') and Label.Visible then
+			YSize = YSize + 18;
+			if (Label.TextBounds.X > XSize) then
+				XSize = Label.TextBounds.X
+			end
 		end;
 	end;
 
 	Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
-end;
+end
+
 Library:Spectators()
 
 function Library:SetWatermark(Text)
