@@ -2560,6 +2560,112 @@ do
 	Library.KeybindFrame = KeybindOuter;
 	Library.KeybindContainer = KeybindContainer;
 	Library:MakeDraggable(KeybindOuter);
+
+
+	local SpectatorOuter = Library:Create('Frame', {
+		AnchorPoint = Vector2.new(0, 0.5);
+		BorderColor3 = Color3.new(0, 0, 0);
+		Position = UDim2.new(0, 10, 0.5, 0);
+		Size = UDim2.new(0, 210, 0, 20);
+		Visible = false;
+		ZIndex = 100;
+		Parent = ScreenGui;
+	});
+
+	local SpectatorInner = Library:Create('Frame', {
+		BackgroundColor3 = Library.MainColor;
+		BorderColor3 = Library.OutlineColor;
+		BorderMode = Enum.BorderMode.Inset;
+		Size = UDim2.new(1, 0, 1, 0);
+		ZIndex = 101;
+		Parent = SpectatorOuter;
+	});
+
+	Library:AddToRegistry(SpectatorInner, {
+		BackgroundColor3 = 'MainColor';
+		BorderColor3 = 'OutlineColor';
+	}, true);
+
+	local ColorFrame = Library:Create('Frame', {
+		BackgroundColor3 = Library.AccentColor;
+		BorderSizePixel = 0;
+		Size = UDim2.new(1, 0, 0, 2);
+		ZIndex = 102;
+		Parent = SpectatorInner;
+	});
+
+	Library:AddToRegistry(ColorFrame, {
+		BackgroundColor3 = 'AccentColor';
+	}, true);
+
+	local SpectatorLabel = Library:CreateLabel({
+		Size = UDim2.new(1, 0, 0, 20);
+		Position = UDim2.fromOffset(5, 2),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Text = 'Spectators';
+		ZIndex = 104;
+		Parent = SpectatorInner;
+	});
+
+	local SpectatorContainer = Library:Create('Frame', {
+		BackgroundTransparency = 1;
+		Size = UDim2.new(1, 0, 1, -20);
+		Position = UDim2.new(0, 0, 0, 20);
+		ZIndex = 1;
+		Parent = SpectatorInner;
+	});
+
+	Library:Create('UIListLayout', {
+		FillDirection = Enum.FillDirection.Vertical;
+		SortOrder = Enum.SortOrder.LayoutOrder;
+		Parent = SpectatorContainer;
+	});
+
+	Library:Create('UIPadding', {
+		PaddingLeft = UDim.new(0, 5),
+		Parent = SpectatorContainer,
+	})
+
+	Library.SpectatorFrame = SpectatorOuter;
+	Library.SpectatorOuter = SpectatorContainer;
+	Library:MakeDraggable(SpectatorOuter);
+end;
+
+function Library:Spectators()
+	local function GetSpectators()
+		local CurrentSpectators = {}
+		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
+			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then 
+				table.insert(CurrentSpectators, #CurrentSpectators+1, v)
+			end
+		end
+		return CurrentSpectators
+	end
+	local ContainerLabel = Library:CreateLabel({
+		TextXAlignment = Enum.TextXAlignment.Left;
+		Size = UDim2.new(1, 0, 0, 18);
+		TextSize = 13;
+		Visible = false;
+		ZIndex = 110;
+		Parent = Library.SpectatorContainer;
+	},  true);
+	for i,v in next, GetSpectators() do
+		ContainerLabel.Text = v.Name
+		ContainerLabel.Visible = true;
+		ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor;
+		Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor';
+		local YSize = 0
+		local XSize = 0
+		for _, Label in next, Library.SpectatorContainer:GetChildren() do
+			if Label:IsA('TextLabel') and Label.Visible then
+				YSize = YSize + 18;
+				if (Label.TextBounds.X > XSize) then
+					XSize = Label.TextBounds.X
+				end
+			end;
+		end;
+		Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
+	end
 end;
 
 function Library:SetWatermark(Text)
