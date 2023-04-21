@@ -2650,24 +2650,31 @@ function Library:Spectators()
 		end
 		return CurrentSpectators
 	end
-	for i,v in next, GetSpectators() do
-		local new = ContainerLabel:Clone()
-		new.Parent = Library.SpectatorContainer
-		new.Visible = true
-		new.Name = v.Name
-		new.Text = v.Name
-	end
-	local YSize = 0
-	local XSize = 0
-	for _, Label in next, Library.SpectatorContainer:GetChildren() do
-		if Label:IsA('TextLabel') and Label.Visible then
-			YSize = YSize + 18;
-			if (Label.TextBounds.X > XSize) then
-				XSize = Label.TextBounds.X
+	while wait(0.05) do
+		for i,v in next, script.Parent:GetChildren() do
+			if v.Name ~= "ContainerLabel" and not v:IsA("UIListLayout") and not v:IsA("LocalScript") then
+				v:Destroy()
 			end
+		end
+		for i,v in next, GetSpectators() do
+			local new = ContainerLabel:Clone()
+			new.Parent = Library.SpectatorContainer
+			new.Visible = true
+			new.Name = v.Name
+			new.Text = v.Name
+		end
+		local YSize = 0
+		local XSize = 0
+		for _, Label in next, Library.SpectatorContainer:GetChildren() do
+			if Label:IsA('TextLabel') and Label.Visible then
+				YSize = YSize + 18;
+				if (Label.TextBounds.X > XSize) then
+					XSize = Label.TextBounds.X
+				end
+			end;
 		end;
-	end;
-	Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
+		Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
+	end
 end
 
 function Library:SetWatermark(Text)
