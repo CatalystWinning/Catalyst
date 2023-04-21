@@ -2627,8 +2627,8 @@ do
 	})
 
 	Library.SpectatorFrame = SpectatorOuter;
-	Library.SpectatorOuter = SpectatorContainer;
-	Library:MakeDraggable(SpectatorOuter);
+	Library.SpectatorContainer = SpectatorContainer;
+	Library:MakeDraggable(KeybindOuter);
 end;
 
 function Library:Spectators()
@@ -2640,25 +2640,20 @@ function Library:Spectators()
 		ZIndex = 110;
 		Parent = Library.SpectatorContainer;
 	},  true);
-
-	while true do
+	local function GetSpectators()
 		local CurrentSpectators = {}
 		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
 			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then 
 				table.insert(CurrentSpectators, #CurrentSpectators+1, v)
 			end
 		end
-
-		local Text = ""
-		for i,v in ipairs(CurrentSpectators) do
-			Text = Text .. " " .. v.Name
-		end
-
-		ContainerLabel.Text = Text
+		return CurrentSpectators
+	end
+	for i,v in next, GetSpectators() do
+		ContainerLabel.Text = v.Name
 		ContainerLabel.Visible = true
 		ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor
 		Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor'
-
 		local YSize = 0
 		local XSize = 0
 		for _, Label in next, Library.SpectatorContainer:GetChildren() do
@@ -2670,10 +2665,9 @@ function Library:Spectators()
 			end
 		end
 		Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
-
-		wait(1)
 	end
 end;
+coroutine.wrap(Spectators)()
 
 function Library:SetWatermark(Text)
 	local X, Y = Library:GetTextBounds(Text, Library.Font, 14);
