@@ -2628,7 +2628,7 @@ do
 
 	Library.SpectatorFrame = SpectatorOuter;
 	Library.SpectatorContainer = SpectatorContainer;
-	Library:MakeDraggable(KeybindOuter);
+	Library:MakeDraggable(SpectatorOuter);
 end;
 
 function Library:Spectators()
