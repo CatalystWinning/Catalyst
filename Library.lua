@@ -2665,6 +2665,7 @@ function Library:Spectators()
 
 	Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
 end;
+Library:Spectators()
 
 function Library:SetWatermark(Text)
 	local X, Y = Library:GetTextBounds(Text, Library.Font, 14);
