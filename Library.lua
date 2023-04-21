@@ -2641,33 +2641,29 @@ function Library:Spectators()
 		end
 		return CurrentSpectators
 	end
-	while true do
-		for i, spectator in ipairs(GetSpectators()) do
-			local ContainerLabel = Library:CreateLabel({
-				TextXAlignment = Enum.TextXAlignment.Left;
-				Size = UDim2.new(1, 0, 0, 18);
-				TextSize = 13;
-				Visible = false;
-				ZIndex = 110;
-				Parent = Library.SpectatorContainer;
-			},  true);
-			ContainerLabel.Text = spectator.Name
-			ContainerLabel.Visible = true;
-			ContainerLabel.TextColor3 = Color3.new(1, 1, 1)
-			local YSize = 0
-			local XSize = 0
-			for _, Label in next, Library.SpectatorContainer:GetChildren() do
-				if Label:IsA('TextLabel') and Label.Visible then
-					YSize = YSize + 18;
-					if (Label.TextBounds.X > XSize) then
-						XSize = Label.TextBounds.X
-					end
-				end;
-			end;
-			Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
-		end
-		wait(0.001)
-	end
+
+	local YSize = 0
+	local XSize = 0
+
+	for i, spectator in ipairs(GetSpectators()) do
+		local ContainerLabel = Library:CreateLabel({
+			TextXAlignment = Enum.TextXAlignment.Left;
+			Size = UDim2.new(1, 0, 0, 18);
+			TextSize = 13;
+			Visible = true;
+			ZIndex = 110;
+			Parent = Library.SpectatorContainer;
+		}, true);
+
+		ContainerLabel.Text = spectator.Name
+		ContainerLabel.TextColor3 = Color3.new(1, 1, 1)
+		YSize = YSize + 18;
+		if (ContainerLabel.TextBounds.X > XSize) then
+			XSize = ContainerLabel.TextBounds.X
+		end;
+	end;
+
+	Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
 end;
 
 function Library:SetWatermark(Text)
