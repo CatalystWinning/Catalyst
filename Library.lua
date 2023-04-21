@@ -2631,57 +2631,6 @@ do
 	Library:MakeDraggable(SpectatorOuter);
 end;
 
-function Library:Spectators()
-	local function addSpectator(L_1199_arg0)
-		local ContainerLabel = Library:CreateLabel({
-			TextXAlignment = Enum.TextXAlignment.Left;
-			Size = UDim2.new(1, 0, 0, 18);
-			TextSize = 13;
-			Visible = false;
-			TextColor3 = Color3.new(1, 1, 1),
-			ZIndex = 110;
-			Parent = Library.SpectatorContainer;
-			Text = L_1199_arg0,
-		},  true);
-	end;
-	local function removeSpectators()
-		for L_1201_forvar0, L_1202_forvar1 in next, Library.SpectatorContainer:GetChildren() do
-			if L_1202_forvar1:IsA"TextLabel" then
-				L_1202_forvar1:Destroy()
-			end
-		end
-	end;
-	while Library.SpectatorFrame do
-		wait()
-		removeSpectators()
-		if LocalPlayer:FindFirstChild("CameraCF") then
-			local PlayerCam = LocalPlayer.CameraCF.Value.p;
-			for i, v in next, Players:GetPlayers() do
-				if not v.Character or v.Character and not v.Character:FindFirstChild("HumanoidRootPart") then
-					if v:FindFirstChild("CameraCF") and v ~= LocalPlayer and LocalPlayer.Character and LocalPlayer.Character.PrimaryPart then
-						local vCam = v.CameraCF.Value.p;
-						if (vCam - PlayerCam).magnitude < 20 then
-							addSpectator(v.Name)
-						end
-					end
-				end
-			end
-		end;
-		wait()
-	end
-	local YSize = 0
-	local XSize = 0
-	for _, Label in next, Library.SpectatorContainer:GetChildren() do
-		if Label:IsA('TextLabel') and Label.Visible then
-			YSize = YSize + 18;
-			if (Label.TextBounds.X > XSize) then
-				XSize = Label.TextBounds.X
-			end
-		end;
-	end;
-	Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
-end
-
 function Library:SetWatermark(Text)
 	local X, Y = Library:GetTextBounds(Text, Library.Font, 14);
 	Library.Watermark.Size = UDim2.new(0, X + 15, 0, (Y * 1.5) + 3);
