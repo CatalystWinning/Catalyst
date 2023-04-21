@@ -2675,6 +2675,7 @@ function Library:Spectators()
 		end
 	end)
 end;
+Library:Spectators()
 
 function Library:SetWatermark(Text)
 	local X, Y = Library:GetTextBounds(Text, Library.Font, 14);
