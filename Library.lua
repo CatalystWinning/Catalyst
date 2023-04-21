@@ -2634,24 +2634,18 @@ end;
 function Library:Spectators()
 	local function GetSpectators()
 		local CurrentSpectators = {}
-		for i, v in pairs(game:GetService("Players"):GetChildren()) do
-			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then
-				table.insert(CurrentSpectators, #CurrentSpectators + 1, v)
+		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
+			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then 
+				table.insert(CurrentSpectators, #CurrentSpectators+1, v)
 			end
 		end
 		return CurrentSpectators
 	end
 
-	for _, Label in ipairs(Library.SpectatorContainer:GetChildren()) do
-		if Label:IsA('TextLabel') then
-			Label:Destroy()
-		end
-	end
-
 	local YSize = 0
 	local XSize = 0
 
-	for i, v in ipairs(GetSpectators()) do
+	for i, spectator in ipairs(GetSpectators()) do
 		local ContainerLabel = Library:CreateLabel({
 			TextXAlignment = Enum.TextXAlignment.Left;
 			Size = UDim2.new(1, 0, 0, 18);
@@ -2659,20 +2653,18 @@ function Library:Spectators()
 			Visible = true;
 			ZIndex = 110;
 			Parent = Library.SpectatorContainer;
-		}, true)
+		}, true);
 
-		ContainerLabel.Text = " " .. v.Name
-		ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor
-		Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor'
-
-		YSize = YSize + 18
+		ContainerLabel.Text = spectator.Name
+		ContainerLabel.TextColor3 =Color3.new(1, 1, 1)
+		YSize = YSize + 18;
 		if (ContainerLabel.TextBounds.X > XSize) then
 			XSize = ContainerLabel.TextBounds.X
-		end
-	end
+		end;
+	end;
 
 	Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
-end
+end;
 Library:Spectators()
 
 function Library:SetWatermark(Text)
