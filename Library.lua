@@ -2634,38 +2634,57 @@ end;
 function Library:Spectators()
 	local function GetSpectators()
 		local CurrentSpectators = {}
-		for i,v in pairs(game:GetService("Players"):GetChildren()) do 
-			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then 
-				table.insert(CurrentSpectators, #CurrentSpectators+1, v)
+		for i, v in pairs(game:GetService("Players"):GetChildren()) do
+			if v ~= game:GetService("Players").LocalPlayer and not v.Character and v:FindFirstChild("CameraCF") and (v.CameraCF.Value.Position - workspace.CurrentCamera.CFrame.p).Magnitude < 10 then
+				table.insert(CurrentSpectators, #CurrentSpectators + 1, v)
 			end
 		end
 		return CurrentSpectators
 	end
-	local ContainerLabel = Library:CreateLabel({
-		TextXAlignment = Enum.TextXAlignment.Left;
-		Size = UDim2.new(1, 0, 0, 18);
-		TextSize = 13;
-		Visible = false;
-		ZIndex = 110;
-		Parent = Library.SpectatorContainer;
-	},  true);
-	for i,v in next, GetSpectators() do
-		ContainerLabel.Text = v.Name
-		ContainerLabel.Visible = true;
-		ContainerLabel.TextColor3 = Color3.new(1, 1, 1)
-		local YSize = 0
-		local XSize = 0
-		for _, Label in next, Library.SpectatorContainer:GetChildren() do
-			if Label:IsA('TextLabel') and Label.Visible then
-				YSize = YSize + 18;
-				if (Label.TextBounds.X > XSize) then
-					XSize = Label.TextBounds.X
-				end
-			end;
-		end;
-		Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
+
+	local SpectatorLabels = {}
+
+	-- Create or update labels for current spectators
+	for i, v in ipairs(GetSpectators()) do
+		if not SpectatorLabels[v.UserId] then
+			SpectatorLabels[v.UserId] = Library:CreateLabel({
+				TextXAlignment = Enum.TextXAlignment.Left;
+				Size = UDim2.new(1, 0, 0, 18);
+				TextSize = 13;
+				Visible = true;
+				ZIndex = 110;
+				Parent = Library.SpectatorContainer;
+			}, true);
+		end
+
+		SpectatorLabels[v.UserId].Text = " " .. v.Name
+		SpectatorLabels[v.UserId].TextColor3 = Library.AccentColor or Library.FontColor
+		Library.RegistryMap[SpectatorLabels[v.UserId]].Properties.TextColor3 = 'AccentColor' or 'FontColor'
 	end
-end;
+
+	-- Remove labels for spectators who are no longer spectating
+	for UserId, Label in pairs(SpectatorLabels) do
+		if not table.find(GetSpectators(), function(p) return p.UserId == UserId end) then
+			Label:Destroy()
+			SpectatorLabels[UserId] = nil
+		end
+	end
+
+	-- Resize the spectator frame to fit all labels
+	local YSize = 0
+	local XSize = 0
+
+	for _, Label in ipairs(Library.SpectatorContainer:GetChildren()) do
+		if Label:IsA('TextLabel') and Label.Visible then
+			YSize = YSize + 18;
+			if (Label.TextBounds.X > XSize) then
+				XSize = Label.TextBounds.X
+			end
+		end;
+	end;
+
+	Library.SpectatorFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
+end
 
 function Library:SetWatermark(Text)
 	local X, Y = Library:GetTextBounds(Text, Library.Font, 14);
