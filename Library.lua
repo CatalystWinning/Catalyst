@@ -2657,10 +2657,9 @@ function Library:Spectators()
 				end;
 			end;
 			for i,v in next, GetSpectators() do
-				ContainerLabel.Text = " " .. v.Name
+				ContainerLabel.Text = v.Name
 				ContainerLabel.Visible = true;
-				ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor;
-				Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor';
+				ContainerLabel.TextColor3 = Color3.new(1, 1, 1)
 				local YSize = 0
 				local XSize = 0
 				for _, Label in next, Library.SpectatorContainer:GetChildren() do
