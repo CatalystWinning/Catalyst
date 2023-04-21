@@ -2644,10 +2644,9 @@ function Library:Spectators()
 
 	local SpectatorLabels = {}
 
-	-- Create or update labels for current spectators
 	for i, v in ipairs(GetSpectators()) do
 		if not SpectatorLabels[v.UserId] then
-			SpectatorLabels[v.UserId] = Library:CreateLabel({
+			local ContainerLabel = Library:CreateLabel({
 				TextXAlignment = Enum.TextXAlignment.Left;
 				Size = UDim2.new(1, 0, 0, 18);
 				TextSize = 13;
@@ -2655,14 +2654,14 @@ function Library:Spectators()
 				ZIndex = 110;
 				Parent = Library.SpectatorContainer;
 			}, true);
-		end
 
-		SpectatorLabels[v.UserId].Text = " " .. v.Name
-		SpectatorLabels[v.UserId].TextColor3 = Library.AccentColor or Library.FontColor
-		Library.RegistryMap[SpectatorLabels[v.UserId]].Properties.TextColor3 = 'AccentColor' or 'FontColor'
+			SpectatorLabels[v.UserId] = ContainerLabel
+			ContainerLabel.Text = " " .. v.Name
+			ContainerLabel.TextColor3 = Library.AccentColor or Library.FontColor
+			Library.RegistryMap[ContainerLabel].Properties.TextColor3 = 'AccentColor' or 'FontColor'
+		end
 	end
 
-	-- Remove labels for spectators who are no longer spectating
 	for UserId, Label in pairs(SpectatorLabels) do
 		if not table.find(GetSpectators(), function(p) return p.UserId == UserId end) then
 			Label:Destroy()
@@ -2670,7 +2669,6 @@ function Library:Spectators()
 		end
 	end
 
-	-- Resize the spectator frame to fit all labels
 	local YSize = 0
 	local XSize = 0
 
