@@ -2625,6 +2625,15 @@ do
 		PaddingLeft = UDim.new(0, 5),
 		Parent = SpectatorContainer,
 	})
+	
+	local Spectators = Library:CreateLabel({
+		TextXAlignment = Enum.TextXAlignment.Left;
+		Size = UDim2.new(1, 0, 0, 18);
+		TextSize = 13;
+		Visible = false;
+		ZIndex = 110;
+		Parent = Library.SpectatorContainer;
+	},  true);
 
 	Library.SpectatorFrame = SpectatorOuter;
 	Library.SpectatorContainer = SpectatorContainer;
